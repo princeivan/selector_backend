@@ -80,37 +80,26 @@ class User(AbstractUser):
         self.full_clean()   
         super().save(*args, **kwargs)
 
-class SoilType(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    ph_range = models.CharField(max_length=20, blank=True)
-    texture = models.CharField(max_length=50, blank=True)
-    drainage = models.CharField(max_length=50, blank=True)
-    fertility = models.CharField(max_length=50, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        self.name
 
 class County(models.Model):
     county_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    county_name = models.CharField(max_length=100)
 
 
     def __str__(self):
-        self.name 
+        return self.county_name 
 
 class Subcounty(models.Model):
     subcounty_id = models.IntegerField(primary_key=True)
     county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="subcounties")
-    name = models.CharField(max_length=100)
+    subcounty_name = models.CharField(max_length=100)
 
     def __str__(self):
-        self.name 
+        return self.subcounty_name
 
 class Ward(models.Model):
     ward_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    ward_name = models.CharField(max_length=100)
     subcounty = models.ForeignKey(Subcounty,on_delete=models.CASCADE, null=True, related_name="wards")
     latitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
@@ -126,40 +115,34 @@ class Ward(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        self.name
+        return self.ward_name
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    category_name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        self.name
+        return self.category_name
 
 class Crop(models.Model):
     crop_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100, unique=True)
+    crop_name_en = models.CharField(max_length=100, null=True, blank=True)
+    crop_en_sw = models.CharField(max_length=100, null=True, blank=True)
+    crop_scientificname = models.CharField(max_length=100, null=True, blank=True)
     category = models.ForeignKey(Category,on_delete=models.CASCADE, null=True, related_name="crops")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        self.name
+        return self.en_name
 
-class SoilCondition(models.Model):
-    soil_type = models.CharField(max_length=100)
-    drainage = models.CharField(max_length=50)
-    depth_or_texture = models.CharField(max_length=50)
+class SoilType(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    description =models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.soil_type} | {self.drainage} | {self.depth_or_texture}"
-    
+        return self.name
 
 class CropVariety(models.Model):
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE, related_name='varieties')
     variety = models.CharField(max_length=100)
-
-    soil_condition = models.ForeignKey(
-        SoilCondition,
-        on_delete=models.PROTECT,
-        related_name="varieties", null=True, blank=True
-    )
 
     # Soil chemistry
     minpH = models.DecimalField(max_digits=3, decimal_places=1,null=True, blank=True)
@@ -185,7 +168,19 @@ class CropVariety(models.Model):
 
     def __str__(self):
         return self.variety
+class CropSoiltype(models.Model):
+    crop_variety = models.ForeignKey(
+       CropVariety,
+        on_delete=models.CASCADE
+    )
+    soil_type = models.ForeignKey(
+       SoilType,
+        on_delete=models.CASCADE 
+    )
     
+    def __str__(self):
+        return f"{self.crop_variety} | {self.soil_type}"
+       
 class Aez_zone(models.Model):
     aez_id = models.IntegerField(primary_key=True)
     zone_name = models.CharField(max_length=100, blank=True, null=True)
@@ -193,14 +188,14 @@ class Aez_zone(models.Model):
     average_annual_rainfall = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        self.name 
+         return f"{self.zone_name} | {self.altitude_range}"
 
 class LivestockCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        self.name
+        return self.name
 
 class Livestock(models.Model):
     livestock_id = models.IntegerField(primary_key=True)
@@ -209,7 +204,7 @@ class Livestock(models.Model):
     aez = models.ForeignKey(Aez_zone, on_delete=models.CASCADE, related_name="livestocks")
     
     def __str__(self):
-        self.name
+        return self.name
 
 
 class PastureCategory(models.Model):
@@ -217,7 +212,7 @@ class PastureCategory(models.Model):
     name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        self.name
+        return self.name
 
 class Pasture(models.Model):
     pasture_id = models.IntegerField(primary_key=True)
@@ -225,7 +220,7 @@ class Pasture(models.Model):
     category = models.ForeignKey(PastureCategory, on_delete=models.CASCADE) 
 
     def __str__(self):
-        self.name
+        return self.name
 
 class PastureVariety(models.Model):
     variety_id = models.IntegerField(primary_key=True)
@@ -233,7 +228,7 @@ class PastureVariety(models.Model):
     pasture_name = models.ForeignKey(Pasture, on_delete=models.CASCADE)
     aez = models.ForeignKey(Aez_zone, on_delete=models.CASCADE, related_name="pastures")
     def __str__(self):
-        self.name
+        return self.name
 
     
 

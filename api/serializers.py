@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from .models import User, County,Subcounty, SoilType, Ward, Category, Crop,Aez_zone,SoilCondition, CropVariety, LivestockCategory, Livestock,PastureCategory,Pasture, PastureVariety
+from .models import User, County,Subcounty, SoilType, Ward, Category, Crop,Aez_zone,CropSoiltype, CropVariety, LivestockCategory, Livestock,PastureCategory,Pasture, PastureVariety
 
 class AezSerializers(serializers.ModelSerializer):
     class Meta:
@@ -43,9 +43,9 @@ class CropSerializers(serializers.ModelSerializer):
         model = Crop
         fields = '__all__'
 
-class SoilConditionSerializer(serializers.ModelSerializer):
+class CropSoilTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SoilCondition
+        model = CropSoiltype
         fields = '__all__'
 
 

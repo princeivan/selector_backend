@@ -2,7 +2,7 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
     User, SoilType, County, Subcounty, Ward,
-    Category, Crop, CropVariety, SoilCondition,
+    Category, Crop, CropVariety, CropSoiltype,
     Aez_zone, LivestockCategory, Livestock,
     PastureCategory, Pasture, PastureVariety
 )
@@ -58,9 +58,9 @@ class SoilTypeViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'texture', 'fertility']
 
 
-class SoilConditionViewSet(viewsets.ModelViewSet):
-    queryset = SoilCondition.objects.all()
-    serializer_class = SoilConditionSerializer
+class CropSoilTypeViewSet(viewsets.ModelViewSet):
+    queryset = CropSoiltype.objects.all()
+    serializer_class = CropSoilTypeSerializer
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ['soil_type', 'drainage', 'depth_or_texture']

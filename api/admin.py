@@ -1,10 +1,12 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
+from .resources import * 
+
 from .models import (
     County, Crop, Subcounty, Ward, Category,
     CropVariety, LivestockCategory, Livestock,
     PastureCategory, Pasture, PastureVariety,
-     User,SoilCondition
+     User,CropSoiltype, Aez_zone
 )
 
 # -----------------------
@@ -20,13 +22,18 @@ class BaseImportExportAdmin(ImportExportModelAdmin):
 # LOCATION MODELS
 # -----------------------
 @admin.register(County)
-class CountyAdmin(BaseImportExportAdmin):
-    pass
+class CountyAdmin(ImportExportModelAdmin):
+    resource_class = CountyResource
 
 
 @admin.register(Subcounty)
-class SubcountyAdmin(BaseImportExportAdmin):
-    pass
+class SubcountyAdmin(ImportExportModelAdmin):
+    resource_class = SubCountyResource
+
+
+@admin.register(Aez_zone)
+class AezZoneAdmin(ImportExportModelAdmin):
+    resource_class = AezZoneResource
 
 
 @admin.register(Ward)
@@ -43,12 +50,12 @@ class CropAdmin(BaseImportExportAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(BaseImportExportAdmin):
-    pass
+class CategoryAdmin(ImportExportModelAdmin):
+    resource_class = CropCategoryResource
 
 
-@admin.register(SoilCondition)
-class SoilConditionAdmin(BaseImportExportAdmin):
+@admin.register(CropSoiltype)
+class CropSoilTypeAdmin(BaseImportExportAdmin):
     pass
 
 @admin.register(CropVariety)

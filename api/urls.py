@@ -7,12 +7,12 @@ router.register(r'counties', CountyViewSet)
 router.register(r'subcounties', SubcountyViewSet)
 router.register(r'wards', WardViewSet)
 
-router.register(r'categories', CategoryViewSet)
+router.register(r'crop-categories', CategoryViewSet)
 router.register(r'crops', CropViewSet)
 router.register(r'crop-varieties', CropVarietyViewSet)
 
 router.register(r'soil-types', SoilTypeViewSet)
-router.register(r'soil-conditions', SoilConditionViewSet)
+router.register(r'crop-soil-ypes', CropSoilTypeViewSet)
 
 router.register(r'aez-zones', AezZoneViewSet)
 
