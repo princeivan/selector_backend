@@ -38,7 +38,7 @@ AUTH_USER_MODEL = 'api.User'
 INSTALLED_APPS = [
 
      'jazzmin',   
-     
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'api',
-   'import_export',
+    'import_export',
+    'rest_framework',
+    'corsheaders',
+    'django_filters'
 ]
 
 MIDDLEWARE = [

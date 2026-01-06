@@ -112,7 +112,6 @@ class Ward(models.Model):
     ward_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     subcounty = models.ForeignKey(Subcounty,on_delete=models.CASCADE, null=True, related_name="wards")
-    soil_type = models.ForeignKey(SoilType, on_delete=models.CASCADE, null=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     altitude = models.IntegerField(null=True)
@@ -143,6 +142,50 @@ class Crop(models.Model):
     def __str__(self):
         self.name
 
+class SoilCondition(models.Model):
+    soil_type = models.CharField(max_length=100)
+    drainage = models.CharField(max_length=50)
+    depth_or_texture = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.soil_type} | {self.drainage} | {self.depth_or_texture}"
+    
+
+class CropVariety(models.Model):
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE, related_name='varieties')
+    variety = models.CharField(max_length=100)
+
+    soil_condition = models.ForeignKey(
+        SoilCondition,
+        on_delete=models.PROTECT,
+        related_name="varieties", null=True, blank=True
+    )
+
+    # Soil chemistry
+    minpH = models.DecimalField(max_digits=3, decimal_places=1,null=True, blank=True)
+    maxpH = models.DecimalField(max_digits=3, decimal_places=1,null=True, blank=True)
+
+    # Temperature (°C)
+    minTemp = models.PositiveIntegerField(null=True, blank=True)
+    maxTemp = models.PositiveIntegerField(null=True, blank=True)
+
+    # Rainfall / precipitation (mm)
+    minPrep = models.PositiveIntegerField(null=True, blank=True)
+    maxPrep = models.PositiveIntegerField(null=True, blank=True)
+
+    # Altitude (meters)
+    minAlti = models.PositiveIntegerField(null=True, blank=True)
+    maxAlti = models.PositiveIntegerField(null=True, blank=True)
+
+    # Tolerance & preferences
+    drought_tolerant = models.BooleanField(default=False)
+    pest_tolerant = models.BooleanField(default=False)
+    availability = models.BooleanField(default=False)
+    farmer_preference = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.variety
+    
 class Aez_zone(models.Model):
     aez_id = models.IntegerField(primary_key=True)
     zone_name = models.CharField(max_length=100, blank=True, null=True)
@@ -151,40 +194,6 @@ class Aez_zone(models.Model):
 
     def __str__(self):
         self.name 
-
-class CropRequirement(models.Model):
-    crop = models.OneToOneField(Crop, on_delete=models.CASCADE, related_name='requirements')
-    min_rainfall = models.IntegerField(null=True)
-    max_rainfall = models.IntegerField(null=True)
-    min_temp = models.IntegerField(null=True)
-    max_temp = models.IntegerField(null=True)
-    min_altitude = models.IntegerField(null=True)
-    max_altitude = models.IntegerField(null=True)
-    # optimal_soils = ArrayField(models.CharField(max_length=50), default=list)
-    drought_tolerance = models.CharField(max_length=20, blank=True)
-    flood_tolerance = models.CharField(max_length=20, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        self.name
-
-
-class CropVariety(models.Model):
-    crop = models.ForeignKey(Crop, on_delete=models.CASCADE, related_name='varieties')
-    name = models.CharField(max_length=100)
-    maturity_days = models.IntegerField(null=True)
-    min_altitude = models.IntegerField(null=True)
-    max_altitude = models.IntegerField(null=True)
-    yield_potential = models.CharField(max_length=50, blank=True)
-    drought_tolerance = models.CharField(max_length=20, blank=True)
-    # disease_resistance = ArrayField(models.CharField(max_length=100), default=list)
-    # recommended_regions = ArrayField(models.CharField(max_length=100), default=list)
-    release_year = models.IntegerField(null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        self.name
-
 
 class LivestockCategory(models.Model):
     id = models.IntegerField(primary_key=True)

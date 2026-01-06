@@ -4,7 +4,7 @@ from .models import (
     County, Crop, Subcounty, Ward, Category,
     CropVariety, LivestockCategory, Livestock,
     PastureCategory, Pasture, PastureVariety,
-    CropRequirement, User
+     User,SoilCondition
 )
 
 # -----------------------
@@ -47,13 +47,12 @@ class CategoryAdmin(BaseImportExportAdmin):
     pass
 
 
-@admin.register(CropVariety)
-class CropVarietyAdmin(BaseImportExportAdmin):
+@admin.register(SoilCondition)
+class SoilConditionAdmin(BaseImportExportAdmin):
     pass
 
-
-@admin.register(CropRequirement)
-class CropRequirementAdmin(ImportExportModelAdmin):
+@admin.register(CropVariety)
+class CropVarietyAdmin(BaseImportExportAdmin):
     pass
 
 
