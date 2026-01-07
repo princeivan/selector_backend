@@ -2,67 +2,74 @@ from rest_framework import serializers
 import re
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import User, County,Subcounty, SoilType, Ward,Warddetails, Category, Crop,Aez_zone,CropSoiltype, CropVariety, LivestockCategory, Livestock,PastureCategory,Pasture, PastureVariety
+from django.contrib.auth.password_validation import validate_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['role'] = user.role
+        token['email'] = user.email
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        return token
+    
 
 class UserSerializer(serializers.ModelSerializer):
-    confirm_password = serializers.CharField(write_only=True)
-   
-    avatar = serializers.ImageField(required=False)
-    
+    password = serializers.CharField(write_only=True, required=True)
+
     class Meta:
-        model = User 
-        fields = ["id", "username", "first_name", "last_name", "email","password", "confirm_password", "role","is_active","last_login"]
+        model = User
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "is_active",
+            "last_login",
+            "password",
+        ]
         extra_kwargs = {
-            "password": {"write_only": True},
-            "username": {"required": True},
             "email": {"required": True},
             "first_name": {"required": True},
-            "last_name": {"required": True}
+            "last_name": {"required": True},
         }
-    
-
-    def validate_username(self, value):
-        # Username should be 3-20 characters, alphanumeric with underscores
-        if not re.match(r'^[a-zA-Z0-9_]{3,20}$', value):
-            raise serializers.ValidationError(
-                "Username must be 3-20 characters and can only contain letters, numbers, and underscores"
-            )
-        
-        # Check if username already exists
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Username already exists")
-        
-        return value
-
 
     def validate_email(self, value):
-        # Email format validation
-        if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', value):
-            raise serializers.ValidationError("Please enter a valid email address")
-        
-        # Check if email already exists
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email already registered")
-        
+        qs = User.objects.filter(email=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise serializers.ValidationError("Email already exists")
+
         return value
 
     def validate_password(self, value):
-        # Password validation
-        if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', value):
-            raise serializers.ValidationError(
-                "Password must be at least 8 characters long and contain uppercase, lowercase, number and special character"
-            )
+        validate_password(value)
         return value
 
-    def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"password": "Passwords do not match"})
-        return data
-
     def create(self, validated_data):
-        validated_data.pop("confirm_password")
-        user = User.objects.create_user(**validated_data)
+        password = validated_data.pop("password")
+        user = User.objects.create_user(password=password, **validated_data)
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
         
 class AezSerializers(serializers.ModelSerializer):
     class Meta:
@@ -146,3 +153,16 @@ class PastureVaretySerializers(serializers.ModelSerializer):
         model = PastureVariety
         fields = '__all__'
 
+class DashboardStatsSerializer(serializers.Serializer):
+    total_counties = serializers.IntegerField()
+    total_subcounties = serializers.IntegerField()
+    total_wards = serializers.IntegerField()
+    total_crops = serializers.IntegerField()
+    total_varieties = serializers.IntegerField()
+    total_soiltypes = serializers.IntegerField()
+    total_aez_zones = serializers.IntegerField()
+    total_livestock_categories = serializers.IntegerField()
+    total_livestocks = serializers.IntegerField()
+    total_pasture_categories = serializers.IntegerField()
+    total_pastures = serializers.IntegerField()
+    total_pasture_varieties = serializers.IntegerField()

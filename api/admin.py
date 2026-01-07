@@ -96,4 +96,8 @@ class PastureAdmin(ImportExportModelAdmin):
 class PastureVarietyAdmin(ImportExportModelAdmin):
     resource_class = PastureVarietyResource
 
-admin.site.register(User)
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ("email", "role", "is_active", "created_at")
+    list_filter = ("role", "is_active")
+    search_fields = ("email", "first_name", "last_name")

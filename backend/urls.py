@@ -21,6 +21,11 @@ from django.conf import settings
 from django.views.static import serve
 from django.conf.urls.static import static
 from django.views.decorators.http import require_http_methods
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from api.views import MyTokenObtainPairView, LogoutView
 
 admin.site.site_header = "KALRO Selector Administration"
 admin.site.site_title = "KALRO Selector Admin"
@@ -154,7 +159,11 @@ def root_view(request):
 
 urlpatterns = [
     path('', root_view, name='root'),
+    # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('admin/', admin.site.urls),
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('logout/', LogoutView.as_view(), name='auth_logout'),
     path('api/', include('api.urls'))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,18 +5,19 @@ from django.contrib.auth.models import  AbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 # Create your models here.
 
 class UserManager(BaseUserManager):
-
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
 
         email = self.normalize_email(email)
 
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('role', 'user')
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("role", User.ROLE_USER)
 
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -24,66 +25,59 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_active', True)
-        extra_fields['role'] = 'admin'   
-        if extra_fields.get('is_superuser') is not True:
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("role", User.ROLE_ADMIN)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True")
+
+        if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True")
 
         return self.create_user(email, password, **extra_fields)
     
     
-class User(AbstractUser):
-    
-    ROLE_ADMIN = 'admin'
-    ROLE_USER = 'user'
+class User(AbstractBaseUser, PermissionsMixin):
+    ROLE_ADMIN = "admin"
+    ROLE_ICT = "ict"
+    ROLE_RESEARCHER = "researcher"
+    ROLE_USER = "user"
 
     ROLE_CHOICES = (
-        (ROLE_ADMIN, 'Admin'),
-        (ROLE_USER, 'Regular User'),
+        (ROLE_ADMIN, "Admin"),
+        (ROLE_ICT, "ICT Officer"),
+        (ROLE_RESEARCHER, "Researcher"),
+        (ROLE_USER, "Regular User"),
     )
-    
-    first_name = models.CharField(max_length=500, null=True, blank=True)
-    last_name = models.CharField(max_length=500, null=True, blank=True)
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-    
-    role = models.CharField(max_length=10,
-        choices=ROLE_CHOICES,
-        default=ROLE_USER)
-    
+
+    first_name = models.CharField(max_length=150, blank=True, null=True)
+    last_name = models.CharField(max_length=150, blank=True, null=True)
+
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=ROLE_USER)
+
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     objects = UserManager()
-    
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-    
-    @property
-    def is_admin(self):
-        return self.is_superuser
 
-    def clean(self):
-        """
-        Prevent invalid role/superuser combinations
-        """
-        if self.is_superuser and self.role != self.ROLE_ADMIN:
-            raise ValidationError("Superuser must have role='admin'")
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
-        if self.role == self.ROLE_ADMIN and not self.is_superuser:
-            raise ValidationError("Admin role requires is_superuser=True")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()   
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return self.email
 
 
 class County(models.Model):
     county_id = models.IntegerField(primary_key=True)
-    county_name = models.CharField(max_length=100)
+    county_name = models.CharField(max_length=100, db_index=True)
 
 
     def __str__(self):
@@ -92,14 +86,14 @@ class County(models.Model):
 class Subcounty(models.Model):
     subcounty_id = models.IntegerField(primary_key=True)
     county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="subcounties")
-    subcounty_name = models.CharField(max_length=100)
+    subcounty_name = models.CharField(max_length=100, db_index=True)
 
     def __str__(self):
         return self.subcounty_name or str(self.pk)
     
 class Ward(models.Model):
     ward_id = models.IntegerField(primary_key=True)
-    ward_name = models.CharField(max_length=100)
+    ward_name = models.CharField(max_length=100, db_index=True)
     county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="ward")
     subcounty = models.ForeignKey(Subcounty,on_delete=models.CASCADE, null=True, related_name="wards")
 
@@ -108,7 +102,7 @@ class Ward(models.Model):
 
 
 class Warddetails(models.Model):
-    ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True, related_name="wardsdata" )
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True, related_name="wardsdata" , db_index=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     altitude = models.IntegerField(null=True)
@@ -132,7 +126,7 @@ class Category(models.Model):
 
 class Crop(models.Model):
     crop_id = models.IntegerField(primary_key=True)
-    crop_name_en = models.CharField(max_length=100, null=True, blank=True)
+    crop_name_en = models.CharField(max_length=100, null=True, blank=True, db_index=True)
     crop_en_sw = models.CharField(max_length=100, null=True, blank=True)
     crop_scientificname = models.CharField(max_length=100, null=True, blank=True)
     category = models.ForeignKey(Category,on_delete=models.CASCADE, null=True, related_name="crops")

@@ -14,6 +14,7 @@ from pathlib import Path
 import os 
 from dotenv import load_dotenv 
 load_dotenv()
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,13 +29,25 @@ SECRET_KEY = 'django-insecure-o0dih+((457@f-h##uicg26#)1z)90ydpuwx72b-#--0ve(2xg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.101.100.200']
-
+# ALLOWED_HOSTS = ['10.101.100.200']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 AUTH_USER_MODEL = 'api.User'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 INSTALLED_APPS = [
 
      'jazzmin',   
