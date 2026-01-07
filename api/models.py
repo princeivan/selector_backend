@@ -96,11 +96,16 @@ class Subcounty(models.Model):
 
     def __str__(self):
         return self.subcounty_name or str(self.pk)
-
+    
 class Ward(models.Model):
     ward_id = models.IntegerField(primary_key=True)
     ward_name = models.CharField(max_length=100)
+    county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="ward")
     subcounty = models.ForeignKey(Subcounty,on_delete=models.CASCADE, null=True, related_name="wards")
+
+
+class Warddetails(models.Model):
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True, related_name="wardsdata" )
     latitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     altitude = models.IntegerField(null=True)

@@ -1,5 +1,6 @@
-from import_export import resources
+from import_export import resources, fields
 from .models import *
+from import_export.widgets import ForeignKeyWidget
 
 class AezZoneResource(resources.ModelResource):
     class Meta:
@@ -26,13 +27,18 @@ class CountyResource(resources.ModelResource):
         report_skipped = True
 
 class SubCountyResource(resources.ModelResource):
+    county = fields.Field(
+        column_name='county_id',
+        attribute='county',
+        widget=ForeignKeyWidget(County, 'county_id')
+    )
+
     class Meta:
         model = Subcounty
-        import_id_fields = ('subcounty_id',) 
-        fields = ('subcounty_id', 'county', 'subcounty_name',)
+        import_id_fields = ('subcounty_id',)
+        fields = ('subcounty_id', 'subcounty_name', 'county')
         skip_unchanged = True
         report_skipped = True
-
 class WardResource(resources.ModelResource):
     class Meta:
         model = Ward
@@ -40,7 +46,17 @@ class WardResource(resources.ModelResource):
         fields = (
             'ward_id',
             'ward_name',
+            'county',
             'subcounty',
+        )
+        skip_unchanged = True
+        report_skipped = True
+class WarddetailsResource(resources.ModelResource):
+    class Meta:
+        model = Ward
+        import_id_fields = ('ward_id',)
+        fields = (
+            'ward_id',
             'latitude',
             'longitude',
             'altitude',

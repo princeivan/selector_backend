@@ -1,6 +1,10 @@
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .permissions import IsAdminOrReadOnly
+from rest_framework.throttling import UserRateThrottle
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 from .models import (
     User, SoilType, County, Subcounty, Ward,
     Category, Crop, CropVariety, CropSoiltype,
@@ -9,6 +13,27 @@ from .models import (
 )
 from .serializers import *
 
+class CustomRateThrottle(UserRateThrottle):
+    rate = '5/minute'  # 5 requests per minute
+
+# class CreateUserView(generics.CreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer 
+#     permission_classes = [AllowAny]
+#     throttle_classes = [CustomRateThrottle]
+
+#     def perform_create(self, serializer):
+#         # Validate email format
+#         try:
+#             validate_email(serializer.validated_data['email'])
+#         except DjangoValidationError:
+#             raise ValidationError({'email': 'Invalid email format'})
+        
+#         # Check if email already exists
+#         if User.objects.filter(email=serializer.validated_data['email']).exists():
+#             raise ValidationError({'email': 'Email already exists'})
+        
+#         serializer.save()
 class CountyViewSet(viewsets.ModelViewSet):
     queryset = County.objects.all()
     serializer_class = CountySerializer
@@ -29,6 +54,13 @@ class WardViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'ward_id', 'subcounty__name']
+
+class WardDetailsViewSet(viewsets.ModelViewSet):
+    queryset = Ward.objects.all()
+    serializer_class = wardDetailSerializers
+    permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['ward_id']
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

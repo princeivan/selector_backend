@@ -37,9 +37,12 @@ class AezZoneAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Ward)
-class WardAdmin(BaseImportExportAdmin):
-    pass
+class WardAdmin(ImportExportModelAdmin):
+    resource_class = WardResource
 
+@admin.register(Warddetails)
+class WardDetailsAdmin(ImportExportModelAdmin):
+    resource_class = WardResource
 
 # -----------------------
 # CROP MODELS
