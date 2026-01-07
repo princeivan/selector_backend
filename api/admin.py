@@ -54,7 +54,7 @@ class CropAdmin(BaseImportExportAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(ImportExportModelAdmin):
-    resource_class = CropCategoryResource
+    resource_class = CategoryResource
 
 
 @admin.register(CropSoiltype)

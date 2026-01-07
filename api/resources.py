@@ -69,8 +69,8 @@ class WarddetailsResource(resources.ModelResource):
 class CategoryResource(resources.ModelResource):
     class Meta:
         model = Category
-        import_id_fields = ('category_name',)
-        fields = ('category_name',)
+        import_id_fields = ('id',)
+        fields = ('id','category_name',)
         skip_unchanged = True
         report_skipped = True
 
