@@ -21,6 +21,7 @@ router.register(r'livestocks', LivestockViewSet)
 
 router.register(r'pasture-categories', PastureCategoryViewSet)
 router.register(r'pastures', PastureViewSet)
-router.register(r'pasture-varieties', PastureVarietyViewSet)
+# PastureVariety is part of Pasture model in kalro_selector database
+# router.register(r'pasture-varieties', PastureVarietyViewSet)
 
 urlpatterns = router.urls

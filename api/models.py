@@ -103,6 +103,9 @@ class Ward(models.Model):
     county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="ward")
     subcounty = models.ForeignKey(Subcounty,on_delete=models.CASCADE, null=True, related_name="wards")
 
+    def __str__(self):
+        return self.ward_name or str(self.pk)
+
 
 class Warddetails(models.Model):
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True, related_name="wardsdata" )
