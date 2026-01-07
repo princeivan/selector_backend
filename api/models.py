@@ -95,7 +95,7 @@ class Subcounty(models.Model):
     subcounty_name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.subcounty_name
+        return self.subcounty_name or str(self.pk)
 
 class Ward(models.Model):
     ward_id = models.IntegerField(primary_key=True)
@@ -131,7 +131,7 @@ class Crop(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.en_name
+        return self.crop_name_en
 
 class SoilType(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -204,7 +204,7 @@ class Livestock(models.Model):
     aez = models.ForeignKey(Aez_zone, on_delete=models.CASCADE, related_name="livestocks")
     
     def __str__(self):
-        return self.name
+        return self.breed
 
 
 class PastureCategory(models.Model):

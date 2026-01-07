@@ -55,42 +55,42 @@ class CategoryAdmin(ImportExportModelAdmin):
 
 
 @admin.register(CropSoiltype)
-class CropSoilTypeAdmin(BaseImportExportAdmin):
-    pass
+class CropSoilTypeAdmin(ImportExportModelAdmin):
+    resource_class = CropSoiltypeResource
 
 @admin.register(CropVariety)
-class CropVarietyAdmin(BaseImportExportAdmin):
-    pass
+class CropVarietyAdmin(ImportExportModelAdmin):
+    resource_class = CropVarietyResource
 
 
 # -----------------------
 # LIVESTOCK MODELS
 # -----------------------
 @admin.register(LivestockCategory)
-class LivestockCategoryAdmin(BaseImportExportAdmin):
-    pass
+class LivestockCategoryAdmin(ImportExportModelAdmin):
+    resource_class = LivestockCategoryResource
 
 
 @admin.register(Livestock)
-class LivestockAdmin(BaseImportExportAdmin):
-    pass
+class LivestockAdmin(ImportExportModelAdmin):
+    resource_class=LivestockResource
 
 
 # -----------------------
 # PASTURE MODELS
 # -----------------------
 @admin.register(PastureCategory)
-class PastureCategoryAdmin(BaseImportExportAdmin):
-    pass
+class PastureCategoryAdmin(ImportExportModelAdmin):
+    resource_class= PastureCategoryResource
 
 
 @admin.register(Pasture)
-class PastureAdmin(BaseImportExportAdmin):
-    pass
+class PastureAdmin(ImportExportModelAdmin):
+    resource_class = PastureResource
 
 
 @admin.register(PastureVariety)
-class PastureVarietyAdmin(BaseImportExportAdmin):
-    pass
+class PastureVarietyAdmin(ImportExportModelAdmin):
+    resource_class = PastureVarietyResource
 
 admin.site.register(User)
