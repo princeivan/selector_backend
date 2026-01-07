@@ -42,7 +42,7 @@ class WardAdmin(ImportExportModelAdmin):
 
 @admin.register(Warddetails)
 class WardDetailsAdmin(ImportExportModelAdmin):
-    resource_class = WardResource
+    resource_class = WarddetailsResource
 
 # -----------------------
 # CROP MODELS

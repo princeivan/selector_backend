@@ -27,12 +27,6 @@ class CountyResource(resources.ModelResource):
         report_skipped = True
 
 class SubCountyResource(resources.ModelResource):
-    county = fields.Field(
-        column_name='county_id',
-        attribute='county',
-        widget=ForeignKeyWidget(County, 'county_id')
-    )
-
     class Meta:
         model = Subcounty
         import_id_fields = ('subcounty_id',)
@@ -54,9 +48,9 @@ class WardResource(resources.ModelResource):
 class WarddetailsResource(resources.ModelResource):
     class Meta:
         model = Ward
-        import_id_fields = ('ward_id',)
+        import_id_fields = ('id',)
         fields = (
-            'ward_id',
+            'ward',
             'latitude',
             'longitude',
             'altitude',
