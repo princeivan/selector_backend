@@ -12,7 +12,7 @@ router.register(r'crops', CropViewSet)
 router.register(r'crop-varieties', CropVarietyViewSet)
 
 router.register(r'soil-types', SoilTypeViewSet)
-router.register(r'crop-soil-ypes', CropSoilTypeViewSet)
+router.register(r'crop-soil-types', CropSoilTypeViewSet)
 
 router.register(r'aez-zones', AezZoneViewSet)
 
