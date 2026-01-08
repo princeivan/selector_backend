@@ -30,8 +30,8 @@ SECRET_KEY = 'django-insecure-o0dih+((457@f-h##uicg26#)1z)90ydpuwx72b-#--0ve(2xg
 DEBUG = False
 
 
-ALLOWED_HOSTS = ['10.101.100.200','selector.kalro.org','www.selector.kalro.org']
-
+# ALLOWED_HOSTS = ['10.101.100.200','selector.kalro.org','www.selector.kalro.org']
+ALLOWED_HOSTS=['*']
 
 # Application definition
 
