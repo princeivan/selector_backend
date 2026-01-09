@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import re
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from .models import User, County,Subcounty, SoilType, Ward,Warddetails, Category, Crop,Aez_zone,CropSoiltype, CropVariety, LivestockCategory, Livestock,PastureCategory,Pasture, PastureVariety
+from .models import *
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -153,6 +153,17 @@ class PastureVaretySerializers(serializers.ModelSerializer):
         model = PastureVariety
         fields = '__all__'
 
+class MarketTypeSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = MarketType
+        fields = '__all__'
+
+class DailMarketprioritySerializers(serializers.ModelSerializer):
+    class Meta:
+        model = DailyMarketPriority
+        fields = '__all__'
+
+        
 class DashboardStatsSerializer(serializers.Serializer):
     total_counties = serializers.IntegerField()
     total_subcounties = serializers.IntegerField()

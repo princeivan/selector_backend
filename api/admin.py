@@ -96,6 +96,14 @@ class PastureAdmin(ImportExportModelAdmin):
 class PastureVarietyAdmin(ImportExportModelAdmin):
     resource_class = PastureVarietyResource
 
+@admin.register(MarketType)
+class MarketTypeAdmin(ImportExportModelAdmin):
+    resource_class = MarketTypeResource
+
+@admin.register(DailyMarketPriority)
+class DailyMarketPriorityAdmin(ImportExportModelAdmin):
+    resource_class = DailyMarketPriorityResource
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ("email", "role", "is_active", "created_at")

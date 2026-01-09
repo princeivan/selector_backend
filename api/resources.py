@@ -104,6 +104,14 @@ class CropVarietyResource(resources.ModelResource):
         fields = (
             'crop',
             'variety',
+            'release_year',
+            'owner',
+            'maintainer_seed_source',
+            'maturity_duration_min_months',
+            'maturity_duration_max_months',
+            'yield_min',
+            'yield_max',
+            'yield_unit',
             'minpH',
             'maxpH',
             'minTemp',
@@ -116,6 +124,8 @@ class CropVarietyResource(resources.ModelResource):
             'pest_tolerant',
             'availability',
             'farmer_preference',
+            'special_remarks',
+            'is_active',
         )
         skip_unchanged = True
         report_skipped = True
@@ -143,6 +153,9 @@ class LivestockResource(resources.ModelResource):
             'breed',
             'livestockcategory',
             'aez',
+            'prod_system',
+            'disease_resistance',
+            'feed_requirements',
         )
         skip_unchanged = True
         report_skipped = True
@@ -171,6 +184,71 @@ class PastureVarietyResource(resources.ModelResource):
             'name',
             'pasture_name',
             'aez',
+            'water_requirements',
+            'persistence',
+            'biomass_production',
+        )
+        skip_unchanged = True
+        report_skipped = True
+
+class PastureVarietyResource(resources.ModelResource):
+    class Meta:
+        model = PastureVariety
+        import_id_fields = ('variety_id',)
+        fields = (
+            'variety_id',
+            'name',
+            'pasture_name',
+            'aez',
+            'water_requirements',
+            'persistence',
+            'biomass_production',
+        )
+        skip_unchanged = True
+        report_skipped = True
+
+class MarketTypeResource(resources.ModelResource):
+    class Meta:
+        model = MarketType
+        import_id_fields = ('name',)
+        fields = (
+            'name',
+            'description',
+        )
+        skip_unchanged = True
+        report_skipped = True
+
+class DailyMarketPriorityResource(resources.ModelResource):
+    county = fields.Field(
+        column_name='county',
+        attribute='county',
+        widget=ForeignKeyWidget(County, 'county_name')
+    )
+
+    market_type = fields.Field(
+        column_name='market_type',
+        attribute='market_type',
+        widget=ForeignKeyWidget(MarketType, 'name')
+    )
+
+    class Meta:
+        model = DailyMarketPriority
+        import_id_fields = ('market_name', 'county', 'start_time')
+        fields = (
+            'market_name',
+            'description',
+            'timestamp',
+            'start_time',
+            'end_time',
+            'altitude_mode',
+            'tessellate',
+            'extrude',
+            'visibility',
+            'draw_order',
+            'latitude',
+            'longitude',
+            'county',
+            'market_type',
         )
         skip_unchanged = True
         report_skipped = True

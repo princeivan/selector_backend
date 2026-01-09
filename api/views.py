@@ -15,7 +15,7 @@ from .models import (
     User, SoilType, County, Subcounty, Ward,
     Category, Crop, CropVariety, CropSoiltype,
     Aez_zone, LivestockCategory, Livestock,
-    PastureCategory, Pasture, PastureVariety
+    PastureCategory, Pasture, PastureVariety, DailyMarketPriority, MarketType
 )
 from .serializers import *
 
@@ -99,11 +99,11 @@ class WardViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'ward_id', 'subcounty__name']
 
 class WardDetailsViewSet(viewsets.ModelViewSet):
-    queryset = Ward.objects.all()
+    queryset = Warddetails.objects.all()
     serializer_class = wardDetailSerializers
     permission_classes = [IsAdminICTOrResearcherReadUpdate]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['ward_id']
+    search_fields = ['ward', 'latitude', 'longitude']
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -182,6 +182,20 @@ class PastureVarietyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminICTOrResearcherReadUpdate]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'pasture_name__name', 'aez__zone_name']
+
+class MarketTypeViewSet(viewsets.ModelViewSet):
+    queryset = MarketType.objects.all()
+    serializer_class = MarketTypeSerializers
+    permission_classes = [IsAdminICTOrResearcherReadUpdate]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+class DailyMarketPriorityVarietyViewSet(viewsets.ModelViewSet):
+    queryset = DailyMarketPriority.objects.all()
+    serializer_class = DailMarketprioritySerializers
+    permission_classes = [IsAdminICTOrResearcherReadUpdate]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['market_name', 'county', 'market_type']
 
 class DashboardStatsViewSet(viewsets.ViewSet):
     """

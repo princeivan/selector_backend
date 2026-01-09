@@ -78,6 +78,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 class County(models.Model):
     county_id = models.IntegerField(primary_key=True)
     county_name = models.CharField(max_length=100, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 
     def __str__(self):
@@ -87,6 +89,8 @@ class Subcounty(models.Model):
     subcounty_id = models.IntegerField(primary_key=True)
     county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="subcounties")
     subcounty_name = models.CharField(max_length=100, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.subcounty_name or str(self.pk)
@@ -96,6 +100,8 @@ class Ward(models.Model):
     ward_name = models.CharField(max_length=100, db_index=True)
     county= models.ForeignKey(County, on_delete=models.CASCADE, null=True, related_name="ward")
     subcounty = models.ForeignKey(Subcounty,on_delete=models.CASCADE, null=True, related_name="wards")
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.ward_name or str(self.pk)
@@ -114,12 +120,15 @@ class Warddetails(models.Model):
     lr_temp=models.DecimalField(max_digits=10, decimal_places=6, null=True)
     sr_rain=models.DecimalField(max_digits=10, decimal_places=6, null=True)
     sr_temp=models.DecimalField(max_digits=10, decimal_places=6, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.ward_name
 class Category(models.Model):
     category_name = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.category_name
@@ -138,6 +147,8 @@ class Crop(models.Model):
 class SoilType(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description =models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -145,7 +156,53 @@ class SoilType(models.Model):
 class CropVariety(models.Model):
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE, related_name='varieties')
     variety = models.CharField(max_length=100)
+    release_year = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Year the variety was released"
+    )
 
+    owner = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Institution or breeder owning the variety"
+    )
+
+    maintainer_seed_source = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Seed source or maintaining institution"
+    )
+
+    maturity_duration_min_months = models.PositiveIntegerField(
+        null=True,
+        blank=True
+    )
+
+    maturity_duration_max_months = models.PositiveIntegerField(
+        null=True,
+        blank=True
+    )
+
+    yield_min = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    yield_max = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    yield_unit = models.CharField(
+        max_length=50,
+        default="t/ha",
+        help_text="Yield unit e.g. t/ha, kg/acre"
+    )
     # Soil chemistry
     minpH = models.DecimalField(max_digits=3, decimal_places=1,null=True, blank=True)
     maxpH = models.DecimalField(max_digits=3, decimal_places=1,null=True, blank=True)
@@ -167,6 +224,12 @@ class CropVariety(models.Model):
     pest_tolerant = models.BooleanField(default=False)
     availability = models.BooleanField(default=False)
     farmer_preference = models.BooleanField(default=False)
+    special_remarks = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    
 
     def __str__(self):
         return self.variety
@@ -188,6 +251,8 @@ class Aez_zone(models.Model):
     zone_name = models.CharField(max_length=100, blank=True, null=True)
     altitude_range = models.CharField(max_length=100, blank=True, null=True)
     average_annual_rainfall = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
          return f"{self.zone_name} | {self.altitude_range}"
@@ -195,6 +260,8 @@ class Aez_zone(models.Model):
 class LivestockCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -204,7 +271,12 @@ class Livestock(models.Model):
     breed = models.CharField(max_length=50, blank=True)
     livestockcategory = models.ForeignKey(LivestockCategory, on_delete=models.CASCADE, related_name="livestocks")
     aez = models.ForeignKey(Aez_zone, on_delete=models.CASCADE, related_name="livestocks")
-    
+    prod_system= models.CharField(max_length=200, blank=True, null=True)
+    disease_resistance = models.CharField(max_length=200, blank=True, null=True)	
+    feed_requirements = models.CharField(max_length=200, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     def __str__(self):
         return self.breed
 
@@ -212,6 +284,8 @@ class Livestock(models.Model):
 class PastureCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -219,7 +293,9 @@ class PastureCategory(models.Model):
 class Pasture(models.Model):
     pasture_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50, blank=True)
-    category = models.ForeignKey(PastureCategory, on_delete=models.CASCADE) 
+    category = models.ForeignKey(PastureCategory, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -229,8 +305,84 @@ class PastureVariety(models.Model):
     name = models.CharField(max_length=50, blank=True)
     pasture_name = models.ForeignKey(Pasture, on_delete=models.CASCADE)
     aez = models.ForeignKey(Aez_zone, on_delete=models.CASCADE, related_name="pastures")
+    water_requirements = models.CharField(max_length=50, blank=True)	
+    persistence = models.CharField(max_length=50, blank=True)
+    biomass_production = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     def __str__(self):
         return self.name
+class MarketType(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField(blank=True,null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    class Meta:
+        verbose_name = "Market Type"
+        verbose_name_plural = "Market Types"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+    
+class DailyMarketPriority(models.Model):
+    market_name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField()	
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    altitude_mode = models.PositiveSmallIntegerField(default=0)
+    tessellate = models.BooleanField(default=False)
+    extrude = models.BooleanField(default=False)
+    visibility = models.BooleanField(default=True)
+    draw_order = models.PositiveSmallIntegerField(default=0)
+    county = models.ForeignKey(
+        County,
+        on_delete=models.CASCADE,
+        related_name="markets",
+        db_index=True,
+    )
+    latitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        help_text="Latitude coordinate"
+    )
+    longitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        help_text="Longitude coordinate"
+    )
+    icon = models.ImageField(
+        upload_to="market_icons/",
+        blank=True,
+        null=True
+    )
+    market_type = models.ForeignKey(
+        MarketType,
+        on_delete=models.PROTECT,
+        related_name="markets"
+    )
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["county"]),
+            models.Index(fields=["market_type"]),
+            models.Index(fields=["start_time", "end_time"]),
+        ]
+        verbose_name = "Daily Market Priority"
+        verbose_name_plural = "Daily Market Priorities"
+
+    def __str__(self):
+        return f"{self.market_name} ({self.county})"
+    
+    def clean(self):
+        if self.end_time <= self.start_time:
+            raise ValidationError("End time must be after start time")
+
 
     
 
